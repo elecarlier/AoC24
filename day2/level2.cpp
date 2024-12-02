@@ -11,6 +11,7 @@ Any two adjacent levels differ by at least one and at most three.*/
 void printVector(std::vector<std::vector<int>> vec);
 int check_safes(std::vector<std::vector<int>> vec);
 bool check_individual(const std::vector<int>& vec);
+bool Dampener(const std::vector<int>& vec);
 
 
 void printVector(std::vector<std::vector<int>> vec)
@@ -47,12 +48,14 @@ int check_safes(std::vector<std::vector<int>> vec)
 		const std::vector<int>& lineNumbers = vec[i];
 		if (check_individual(lineNumbers))
 			count++;
-
+		else
+		{
+			if (Dampener(lineNumbers))
+			count++;
+		}
 	}
 	return count;
 }
-
-
 
 bool check_individual(const std::vector<int>& vec)
 {
@@ -80,6 +83,28 @@ bool check_individual(const std::vector<int>& vec)
 
 	return (true);
 }
+
+
+bool Dampener(const std::vector<int>& vec)
+{
+	using std::begin;
+    using std::end;
+
+
+	for (size_t i = 0; i < vec.size(); ++i)
+	{
+		std::vector<int> modifiedVec = vec;
+		modifiedVec.erase(modifiedVec.begin() + i);
+
+		if (check_individual(modifiedVec))
+			return true;
+
+	}
+
+
+	return false;
+}
+
 
 
 
