@@ -16,8 +16,8 @@ void print_vector(std::vector<int> vec)
 
 int main()
 {
-	int total_distance;
-	total_distance = 0;
+	int total;
+	total = 0;
 
 	std::ifstream inputFile("input.txt");
 
@@ -42,23 +42,31 @@ int main()
 	}
 	inputFile.close();
 
-	int size = left.size();
-	int sub_dist;
+	int left_size = left.size();
+	int right_size = right.size();
 
-	sort(left.begin(), left.end());
-	sort(right.begin(), right.end());
+	// sort(left.begin(), left.end());
+	// sort(right.begin(), right.end());
 
 	// print_vector(left);
 	// print_vector(right);
 
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < left_size ; i++)
 	{
-		sub_dist = abs(left[i] - right[i]);
-		total_distance += sub_dist;
+		int sub = 0;
+		for (int j = 0; j < right_size; j++)
+		{
+			if (left[i] == right[j])
+			{
+				sub += 1;
+			}
 
+
+		}
+		sub = sub * left[i];
+		total += sub;
 	}
-
-	std::cout << "Total distance : " << total_distance << std::endl;
+	std::cout << "Total : " << total << std::endl;
 
 
 }
