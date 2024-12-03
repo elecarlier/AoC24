@@ -26,29 +26,42 @@ int main()
 	inputFile.close();
 
 	std::regex mul_regex(R"(mul\((\d+),(\d+)\))");
-	std::smatch match;
+	std::regex dont_regex(R"(don't\(\))");
+	std::regex do_regex(R"(do\(\))");
+ 	std::regex combined_regex(R"(do\(\)|don't\(\)|mul\(\d+,\d+\))");
 
+	std::sregex_iterator iter(fileContent.begin(), fileContent.end(), combined_regex);
+	std::sregex_iterator end;
+
+	bool mul_enabled = true;
 	sum = 0;
 
-	std::string::const_iterator searchStart(fileContent.cbegin());
-	while (std::regex_search(searchStart, fileContent.cend(), match, mul_regex))
+	while (iter != end)
 	{
-		int num1 = std::stoi(match[1].str());
-		int num2 = std::stoi(match[2].str());
+		std::string match = iter->str();
+		if (std::regex_match(match, do_regex))
+			mul_enabled = true;
+		else if (std::regex_match(match, dont_regex))
+			mul_enabled = false;
+		else if (std::regex_match(match, mul_regex))
+		{
+			std::smatch mul_match;
+			if (mul_enabled)
+			{
+				if (std::regex_match(match, mul_match, mul_regex))
+				{
+					int num1 = std::stoi(mul_match[1].str());
+					int num2 = std::stoi(mul_match[2].str());
+					sum += (num1 * num2);
+				}
 
-		sum += (num1 * num2);
-
-		searchStart = match.suffix().first;
+			}
+		}
+		iter++;
 	}
 
+
 	std::cout << "Sum : " << sum;
-	// if (std::regex_search(fileContent, match, mul_regex))
-	// {
-	// 	std::cout << "Nombre 1 : " << match[1] << "\n";
-	// 	std::cout << "Nombre 2 : " << match[2] << "\n";
-	// 	sum += (match[1] * match[2]);
-	// }
-	//std::regex mul_regex(R"(mul\(\d+,\d+\))"); //can't take the two matches
 
 }
 
