@@ -13,8 +13,15 @@ void parse_input(const std::vector<std::string>& grid);
 void print_vector(std::vector<std::string> vec);
 void calc_antinodes(std::map<char, std::vector<std::pair<size_t, size_t>>> char_map, size_t row, size_t col);
 void check_antinodes(std::vector<std::pair<size_t, size_t>>& vec_antinodes, size_t row, size_t col);
-
-
+ void task2(std::map<char, std::vector<std::pair<size_t, size_t>>> char_map, size_t row, size_t col);
+void print_antinodes(const std::set<std::pair<size_t, size_t>>& vec_antinodes)
+{
+    // Parcours du set et impression des éléments
+    for (const auto& antinode : vec_antinodes)
+    {
+        std::cout << "(" << antinode.first << ", " << antinode.second << ")" << std::endl;
+    }
+}
 
 void print_vector(std::vector<std::string> vec)
 {
@@ -35,8 +42,8 @@ int main()
 
 	std::vector<std::string> input;
 
-	//std::ifstream inputFile("input.txt");
-    std::ifstream inputFile("mini_input.txt");
+	std::ifstream inputFile("input.txt");
+    //std::ifstream inputFile("mini_input.txt");
 
 	if (!inputFile.is_open()) {
 		std::cerr << "Erreur : impossible d'ouvrir le fichier !" << std::endl;
@@ -77,15 +84,16 @@ void parse_input(const std::vector<std::string>& grid) {
     }
 
 
-    for (const auto& [key, positions] : char_map) {
-        std::cout << "Clé '" << key << "' : ";
-        for (const auto& [row, col] : positions) {
-            std::cout << "(" << row << ", " << col << ") ";
-        }
-        std::cout << '\n';
-    }
+    // for (const auto& [key, positions] : char_map) {
+    //     std::cout << "Clé '" << key << "' : ";
+    //     for (const auto& [row, col] : positions) {
+    //         std::cout << "(" << row << ", " << col << ") ";
+    //     }
+    //     std::cout << '\n';
+    // }
 
-    calc_antinodes(char_map, size_row, size_col );
+    //calc_antinodes(char_map, size_row, size_col );
+    task2(char_map, size_row, size_col);
 
 }
 
@@ -99,25 +107,27 @@ void calc_antinodes(std::map<char, std::vector<std::pair<size_t, size_t>>> char_
     std::set<std::pair<size_t, size_t>> vec_antinodes;
     //std::pair<size_t, size_t> antinode;
 
+
     for (std::map<char, std::vector<std::pair<size_t, size_t>>>::iterator it = char_map.begin(); it != char_map.end(); ++it) {
         
         std::vector<std::pair<size_t, size_t>>& positions = it->second;
 
         for (std::vector<std::pair<size_t, size_t>>::iterator pos_it = positions.begin(); pos_it != positions.end(); ++pos_it) 
         {
-            std::cout << std::endl << "Coordinate : (" << pos_it->first << ","<< pos_it->second << ") : ";
+           
             for (std::vector<std::pair<size_t, size_t>>::iterator posbis_it = pos_it  + 1; posbis_it != positions.end(); ++posbis_it) 
             {
-                std::cout << "(" << posbis_it->first << ","<< posbis_it->second << "), ";
+                 std::cout << std::endl << "first : (" << pos_it->first << ","<< pos_it->second << ") : ";
+                std::cout << std::endl<<"second (" << posbis_it->first << ","<< posbis_it->second << "), ";
                 std::pair<size_t, size_t> antinode;
-                int diff_x = abs( pos_it->first - posbis_it->first);
-                int diff_y = abs( pos_it->second - posbis_it->second);
+                int diff_x = ( posbis_it->first - pos_it->first );
+                int diff_y = ( posbis_it->second - pos_it->second);
 
                 std::cout << std::endl << "Deltas -> x :" <<  diff_x << " y : " << diff_y ;
                 antinode.first = pos_it->first - diff_x;
                 antinode.second = pos_it->second - diff_y;
 
-                std::cout << std::endl << "Antinode: (" << antinode.first << ", " << antinode.second << ")" ;
+                std::cout << std::endl << "Antinode:1(" << antinode.first << ", " << antinode.second << ")" ;
 
                 if (antinode.first < row && antinode.second < col)
                     vec_antinodes.insert(antinode);
@@ -125,7 +135,7 @@ void calc_antinodes(std::map<char, std::vector<std::pair<size_t, size_t>>> char_
                 antinode.first = posbis_it->first + diff_x;
                 antinode.second = posbis_it->second  + diff_y;
 
-                std::cout << " (" << antinode.first << ", " << antinode.second << ")";
+                std::cout << " Antinode 2(" << antinode.first << ", " << antinode.second << ")";
 
                 if (antinode.first < row && antinode.second < col)
                     vec_antinodes.insert(antinode);
@@ -134,7 +144,72 @@ void calc_antinodes(std::map<char, std::vector<std::pair<size_t, size_t>>> char_
         }
     }
 
+    std::cout << "Number of antinodes : " << vec_antinodes.size() << std::endl;
+
+}
+
+  void task2(std::map<char, std::vector<std::pair<size_t, size_t>>> char_map, size_t row, size_t col)
+{
+
+    std::set<std::pair<size_t, size_t>> vec_antinodes;
+    //std::pair<size_t, size_t> antinode;
+
+    for (std::map<char, std::vector<std::pair<size_t, size_t>>>::iterator it = char_map.begin(); it != char_map.end(); ++it) 
+    {
+        
+        std::vector<std::pair<size_t, size_t>>& positions = it->second;
+        for (std::vector<std::pair<size_t, size_t>>::iterator pos_it = positions.begin(); pos_it != positions.end(); ++pos_it) 
+        {
+            vec_antinodes.insert(*pos_it);
+        }
+
+    }
+
+    for (std::map<char, std::vector<std::pair<size_t, size_t>>>::iterator it = char_map.begin(); it != char_map.end(); ++it) {
+        
+        std::vector<std::pair<size_t, size_t>>& positions = it->second;
+
+        for (std::vector<std::pair<size_t, size_t>>::iterator pos_it = positions.begin(); pos_it != positions.end(); ++pos_it) 
+        {
+           
+            for (std::vector<std::pair<size_t, size_t>>::iterator posbis_it = pos_it  + 1; posbis_it != positions.end(); ++posbis_it) 
+            {
+                std::cout << std::endl << "first : (" << pos_it->first << ","<< pos_it->second << ") : ";
+                std::cout << std::endl<<"second (" << posbis_it->first << ","<< posbis_it->second << "), ";
+                std::pair<size_t, size_t> antinode;
+                int diff_x = ( posbis_it->first - pos_it->first );
+                int diff_y = ( posbis_it->second - pos_it->second);
+
+                std::cout << std::endl << "Deltas -> x :" <<  diff_x << " y : " << diff_y ;
+                antinode.first = pos_it->first - diff_x;
+                antinode.second = pos_it->second - diff_y;
+
+               std::cout << std::endl << "Antinode:1(" << antinode.first << ", " << antinode.second << ")" ;
+                while (antinode.first < row && antinode.second < col)
+                {
+                    vec_antinodes.insert(antinode);
+                    antinode.first = antinode.first - diff_x;
+                    antinode.second = antinode.second - diff_y;
+                }
+
+                antinode.first = posbis_it->first + diff_x;
+                antinode.second = posbis_it->second + diff_y;
+
+                std::cout << " Antinode 2(" << antinode.first << ", " << antinode.second << ")";
+
+                while (antinode.first < row && antinode.second < col)
+                {
+                    vec_antinodes.insert(antinode);
+                    antinode.first = antinode.first + diff_x;
+                    antinode.second = antinode.second + diff_y;
+                }
+                
+            }
+        }
+    }
+
      std::cout << "Number of antinodes : " << vec_antinodes.size() << std::endl;
+    // print_antinodes(vec_antinodes);
 
     
     //check_antinodes(vec_antinodes, row, col);
@@ -147,4 +222,3 @@ void calc_antinodes(std::map<char, std::vector<std::pair<size_t, size_t>>> char_
 
 
 }
-
